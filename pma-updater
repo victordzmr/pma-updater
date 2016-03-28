@@ -1,0 +1,37 @@
+#!/bin/bash
+
+##
+# phpMyAdmin updater.
+#
+# Performs a secure update of an existing phpMyAdmin installation to the latest version.
+#
+# @author Víctor Díaz <victor@axiomer.com>
+# @website https://victordiaz.me
+# @copyright 2016 Víctor Díaz
+# @license The MIT License (MIT) https://opensource.org/licenses/MIT
+# @version 1.0.0
+##
+
+DIRNAME="${1:-./phpmyadmin}"
+INSTALLED_VERSION=`find $DIRNAME -name 'RELEASE-DATE-*' -type f -prune 2>/dev/null`
+INSTALLED_VERSION="${INSTALLED_VERSION##*-}"
+LATEST_VERSION=`curl -s 'https://www.phpmyadmin.net/home_page/version.json' | jq --raw-output '.version'`
+
+if [ "$INSTALLED_VERSION" != "$LATEST_VERSION" ]; then
+	ZIP='/tmp/pma.zip'
+	DIRTMP="${DIRNAME}-tmp"
+	
+	mv $DIRNAME $DIRTMP
+	curl -sL "https://files.phpmyadmin.net/phpMyAdmin/${LATEST_VERSION}/phpMyAdmin-${LATEST_VERSION}-all-languages.zip" -o $ZIP
+	unzip -q $ZIP -d /tmp
+	mv "/tmp/phpMyAdmin-${LATEST_VERSION}-all-languages" $DIRNAME
+	mv "${DIRTMP}/config.inc.php" $DIRNAME
+	
+	rm -rf "${DIRNAME}/setup"
+	rm -f $ZIP
+	rm -rf $DIRTMP
+	
+	echo "Updated to version ${LATEST_VERSION}."
+else
+	echo 'Already up-to-date.'
+fi
