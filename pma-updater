@@ -9,7 +9,7 @@
 # @website https://victordiaz.me
 # @copyright 2016 Víctor Díaz
 # @license The MIT License (MIT) https://opensource.org/licenses/MIT
-# @version 1.0.0
+# @version 1.0.1
 ##
 
 DIRNAME="${1:-./phpmyadmin}"
@@ -19,7 +19,7 @@ LATEST_VERSION=`curl -s 'https://www.phpmyadmin.net/home_page/version.json' | jq
 
 if [ "$INSTALLED_VERSION" != "$LATEST_VERSION" ]; then
 	ZIP='/tmp/pma.zip'
-	DIRTMP="${DIRNAME}-tmp"
+	DIRTMP='/tmp/pma'
 	
 	mv $DIRNAME $DIRTMP
 	curl -sL "https://files.phpmyadmin.net/phpMyAdmin/${LATEST_VERSION}/phpMyAdmin-${LATEST_VERSION}-all-languages.zip" -o $ZIP
